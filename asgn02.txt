@@ -1,0 +1,146 @@
+CSC 406: ALGORITHMS AND DATA STRUCTURES
+
+ASSIGNMENT #2
+
+Elijah Chong Tay
+
+40 POINTS								FEB 22, 2023
+Unless explicitly stated, these are not necessarily programming problems, but you may write a program for them, or do the algorithm on paper in you own words.
+
+1.	There are 22 gloves in a drawer: 5 pairs of red gloves, 4 pairs of yellow and 2 pairs of green. You select the gloves in the dark and can check them only after a selection has been made. What is the smallest number of gloves you need to select to have at least on matching pair in the best case? In the worst case?
+
+Best Case: You select 2 gloves, and they're a pair.
+Worst Case: 
+You select 4 gloves
+R -> Y -> G -> 
+On the 4th iteration regardless of what color glove you select you will have a pair.
+
+2.	You have n > 2 identical-looking coins and a two-pan balance scale with no weights. One of the coins is a fake, but you do not know whether it is lighter or heavier than the genuine coins, which all weight the same. Design a Θ (1) algorithm to determine whether the fake coin is lighter or heavier than the others.
+
+Step 1.) Divide the coins into 3 groups of the same size
+
+Step 2.) Put two groups on the scale
+If the scale is balanced, then the fake coin must be in the third group. 
+
+If it's not balanced, then you know the fake coin is in one of the groups on the scale
+
+Step 3.) Take the with the fake coin 
+Divide it into three smaller groups of equal size.
+Step 4.) Put two of the smaller groups on the balance scale. 
+If the scale is balanced, then the fake coin must be in the third group. Otherwise, you know which of the two groups contains the fake coin and can determine if it's lighter or heavier than the real coin
+
+Step 5.) Take the group with the fake coin and divide it into two smaller groups of equal size. 
+
+Step 6.) Weigh the two smaller groups on the balance scale. 
+If either side is heavier or lighter it will determine which of the coins in that group is the fake coin and if it's heavier or lighter
+
+3.	There are n hamburgers to be fried on a small grill that can hold only two hamburgers at a time. Each hamburger has to be fried on both sides. Frying one side of a hamburger takes 1 minute, regardless of where one or two hamburgers are fried at the same time. Consider the following recursive algorithm for executing this task in the minimum amount of time. If n <= 2, fry the hamburger or the two hamburgers together on each side. If n > 2, fry any two hamburgers together on each side and then apply the same procedure recursively to the remaining n – 2 hamburgers.
+
+a.	Set up an solve the recurrence for the amount of time this algorithm needs to fry n hamburgers.
+T(1) = 2
+T(2) = 2
+T(n) = T(n-2) + 2 for n > 2
+b.	Explain why this algorithm does not fry the hamburgers in the minimum amount of time for all n > 0.
+
+In this case because it always fries two hamburgers at a time, even if frying one hamburger or three hamburgers together on each side would be faster.
+
+c.	Give a correct recursive algorithm that executes the task in the minimum amount of time.
+def fry_hamburgers(n):
+    if n == 1:
+        return 2
+    elif n == 2:
+        return 2
+    elif n % 2 == 0:
+        return n
+    else:
+        #  recurse through the remaining hamburgers after the initial set of hamburgers are cooked
+        return (n - 1) // 2 * 2 + 2 + fry_hamburgers((n-1) // 2)
+
+4.	(Programing Problem) Given an m x n grid of letters and a word, find the location in the grid at which the word can be found. A word matches a straight uninterrupted line of letters in the gird. A word can march the letters in the grid regardless of case. The matching can be done in any of the eight horizontal, vertical or diagonal directions through the grid.
+
+def find_word(grid, word):
+    rows = len(grid)
+    cols = len(grid[0])
+    word = word.lower()  
+
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+
+    # Iterate over each cell in the grid
+    for i in range(rows):
+        for j in range(cols):
+            # check if current position is the first letter of the word
+            if grid[i][j].lower() == word[0]:
+                # go each direction
+                for direction in directions:
+                    row, col = i, j
+                    found = True
+                    for letter in word[1:]:
+                        # go into that direction
+                        row += direction[0]
+                        col += direction[1]
+                        # boundaries checking
+                        if not (0 <= row < rows and 0 <= col < cols):
+                            found = False
+                            break
+                        # check if current position is the second letter of the word
+                        if grid[row][col].lower() != letter:
+                            found = False
+                            break
+                    if found: # return to start
+                        return (i, j)
+    return None
+
+grid = [
+    ['A', 'K', 'C', 'E'],
+    ['Z', 'H', 'E', 'Y'],
+    ['Y', 'A', 'Q', 'V']
+]
+
+word = "HEY"
+location = find_word(grid, word)
+if location:
+    print("The word '" + word + "' was found starting at " + str(location))
+else:
+    print("The word '" + word + "' was not found in the grid")
+
+
+5.	One can model a maze by having a vertex for a starting point, a finishing point, all dead ends, and all points in the maze where more than one path can be taken, and then connecting the vertices according to the paths in the maze. Which graph traversal (DFS or BFS) would you use if you found yourself in a maze and why?
+
+BFS this is because it focuses on the shortest path from your current location to the exit of the maze. Depth first search explores each path until it’s ending before backtracking. Which would be much less efficient.
+
+6.	A faster way to solve the fake-coin problem is to divide the coins into three piles rather than 2. Write pseudocode for the divide-into-three algorithm. Make sure that your algorithm handles all values of n properly, not only those that are multiples of 3. For large values of n, about how many times faster is this algorithm than the one obtained by dividing the coins into two piles? The answer will not depend on n.  
+def find_fake_coin(n, coins):
+    left = 0
+    right = n - 1
+    while left < right:
+        mid = (left + right) // 2
+        left_group = coins[left:mid]
+        right_group = coins[mid:right]
+        left_weight = sum(left_group)
+        right_weight = sum(right_group)
+
+        # fake coin is in the remaining group
+        if left_weight == right_weight:
+            left = mid
+        # fake coin is to the right
+        elif left_weight < right_weight:
+            left = mid+1
+            right = right_group.index(max(right_group)) + mid + 1
+        else:
+        # fake coin is to the left
+            left = left
+            right = left_group.index(max(left_group)) + left
+
+        # At this point, left and right point to the two remaining coins
+    if coins[left] < coins[right]:
+        return "Fake coin is lighter."
+    elif coins[left] > coins[right]:
+        return "Fake coin is heavier."
+    else:
+        return "All coins are genuine."
+
+
+coins = [5,5,5,5,5,7,5,5,5,5,5,5,5,5,5]
+n = len(coins)
+result = find_fake_coin(n, coins)
+print(result)
