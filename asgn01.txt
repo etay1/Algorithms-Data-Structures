@@ -1,0 +1,172 @@
+ASSIGNMENT 1	DA/ALGOS	ELIJAH TAY
+
+
+PSET1
+import math
+def is_perfect_square(number: int) -> bool:
+    return math.isqrt(number) ** 2 == number
+
+n = int(input("Enter a number\n"))
+L = []
+
+#Let's update our list to have n "C"'s
+for i in range(n):
+    L.append("C")
+print(L)
+
+for i in range(n):
+    if is_perfect_square(i):
+        L[i] = 'O'
+    else:
+        L[i] = 'C'
+
+print(L)
+PSET2
+Let:
+A = Person 1 @ 1 minute
+B = Person 2 @ 2 minutes
+C = Person 3 @ 5 minutes
+D = Person 4 @ 10 minutes
+Total Remaining = 17 Minutes
+Time Elapsed = 0 
+ABCD(-bridge-)_;
+
+Step 1: 
+Send A & B
+Time Elapsed += 2
+CD(-bridge-)AB
+
+Step 2: 
+Return A
+Time Elapsed += 1
+ACD(-bridge-)B
+
+Step 3: Send C & D
+Time Elapsed += 10
+A(-bridge-)BCD
+
+Step 4: 
+Return B
+Time Elapsed += 2
+AB(-bridge-)CD
+
+Step 5:
+Send A & B
+Time Elapsed += 2
+(-bridge-)ABCD
+
+Time Remaining = Time Elapsed
+
+
+PSET3
+
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+# Given 3 collinear pts p, q, r,
+# checks if pt q is on line 'pr'
+def onPath(p, q, r):
+    if ((q.x <= max(p.x, r.x)) and (q.x >= min(p.x, r.x)) and
+            (q.y <= max(p.y, r.y)) and (q.y >= min(p.y, r.y))):
+        return True
+    return False
+
+# use slope to determine orientation
+def orientation(p, q, r):
+    # function returns
+    # 0 Collinear points
+    # 1 Clockwise points
+    # 2 Counterclockwise
+
+    val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
+    if (val > 0):
+        # clockwise
+        return 1
+    elif (val < 0):
+        # counter-clockwise
+        return 2
+    else:
+        # collinear
+        return 0
+
+
+# this func returns true if 'p1q1' and 'p2q2' intersect.
+def intersect(p1, q1, p2, q2):
+
+    o1 = orientation(p1, q1, p2)
+    o2 = orientation(p1, q1, q2)
+    o3 = orientation(p2, q2, p1)
+    o4 = orientation(p2, q2, q1)
+
+    #   Base Case:
+    # - (p1, q1, p2) and (p1, q1, q2) have different orientations and
+    # – (p2, q2, p1) and (p2, q2, q1) have different orientations.
+
+    if ((o1 != o2) and (o3 != o4)):
+        return True
+
+    # Edge Cases
+    # (p1, q1, p2), (p1, q1, q2), (p2, q2, p1), and (p2, q2, q1) are all collinear and
+    # – the x-projections of (p1, q1) and (p2, q2) intersect
+    # – the y-projections of (p1, q1) and (p2, q2) intersect
+
+    if ((o1 == 0) and onPath(p1, p2, q1)):
+        return True
+    if ((o2 == 0) and onPath(p1, q2, q1)):
+        return True
+    if ((o3 == 0) and onPath(p2, p1, q2)):
+        return True
+    if ((o4 == 0) and onPath(p2, q1, q2)):
+        return True
+
+    # does not intersect
+    return False
+
+
+# main()
+print("POINT P1: x,y separated by a space")
+x = float(input())
+y = float(input())
+p1 = Point(x,y)
+print("POINT Q1: x,y separated by an enter")
+x = float(input())
+y = float(input())
+q1 = Point(x,y)
+print("POINT P2: x,y separated by a space")
+x = float(input())
+y = float(input())
+p2 = Point(x,y)
+print("POINT Q2: x,y separated by a space")
+x = float(input())
+y = float(input())
+q2 = Point(x,y)
+
+if intersect(p1, q1, p2, q2):
+    print("These two line segments intersect")
+else:
+    print("These two line segments do not intersect")
+
+PSET4
+
+def is_anagram(s1, s2):
+    s1 = s1.lower()
+    s2 = s2.lower()
+    if len(s1) == len(s2):
+        s1 = sorted(s1)
+        s2 = sorted(s2)
+        if s1 == s2:
+            print("The two strings are anagrams")
+        else:
+            print("The two strings are not anagrams")
+    else:
+        print("The two strings are not anagrams")
+
+
+str1 = input("Enter two strings\n")
+
+str2 = input()
+
+is_anagram(str1, str2)
